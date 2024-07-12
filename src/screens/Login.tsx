@@ -13,8 +13,12 @@ import MyTextInput from '../components/MyTextInput'
 import MyButton from '../components/MyButton';
 import Toast from 'react-native-simple-toast'
 import { getFont } from '../helpers/helper';
+import { NavigationProp } from '@react-navigation/native';
 
-const Login = () => {
+type Props = {
+    navigation: NavigationProp<any>;
+};
+const Login = ({ navigation }: Props) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     useEffect(() => {
@@ -47,6 +51,7 @@ const Login = () => {
             return
         }
         Toast.show(`Login successful`, Toast.SHORT)
+        navigation.navigate('HOME')
     }
     return (
         <View style={styles.container} >

@@ -13,8 +13,12 @@ import MyTextInput from '../components/MyTextInput'
 import MyButton from '../components/MyButton';
 import Toast from 'react-native-simple-toast'
 import { getFont } from '../helpers/helper';
+import { NavigationProp } from '@react-navigation/native';
 
-const SignUp = () => {
+type Props = {
+    navigation: NavigationProp<any>;
+};
+const SignUp = ({navigation}: Props) => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -40,6 +44,7 @@ const SignUp = () => {
             await AsyncStorage.setItem('email', email);
             await AsyncStorage.setItem('password', password);
             Toast.show(`Sign up successful`, Toast.SHORT)
+            navigation.navigate('HOME')
         } catch (e) {
             Toast.show(`Problem in sign up. Please try again later`, Toast.SHORT)
             console.log('error sending email to async storage', e);
