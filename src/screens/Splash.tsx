@@ -7,7 +7,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 //styles
 import { CommonActions } from '@react-navigation/native';
 import { getFont } from '../helpers/helper';
-const Splash = ({ navigation }) => {
+import { NavigationProp } from '@react-navigation/native';
+
+type Props = {
+    navigation: NavigationProp<any>;
+};
+const Splash = ({ navigation }: Props) => {
     //function : navigation function
     const resetIndexGoToLogin = CommonActions.reset({
         index: 1,
