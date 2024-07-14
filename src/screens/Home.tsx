@@ -42,6 +42,7 @@ const Home = () => {
                 console.log('alltasks fetched', JSON.parse(allTasks));
             }
         } catch (error) {
+            Toast.show(`error fetching tasks`, Toast.SHORT)
             console.log('error getting tasks', error);
 
         }
@@ -70,7 +71,10 @@ const Home = () => {
             return
         }
         try {
-            let allTasks = await AsyncStorage.getItem('tasks');
+            let allTasks: Task[] = await AsyncStorage.getItem('tasks');
+            allTasks = JSON.parse(allTasks)
+            console.log('allTasks', allTasks);
+
             if (actionType === 'create') {
                 if (!allTasks) {
                     AsyncStorage.setItem('tasks', JSON.stringify([task]));
@@ -86,6 +90,7 @@ const Home = () => {
             Toast.show(`Task ${actionType === 'create' ? 'created' : 'updated'} sucessfully`, Toast.SHORT)
             getTasks()
         } catch (error) {
+            Toast.show(`Error ${actionType === 'create' ? 'creating' : 'updating'} task`, Toast.SHORT)
             console.log('error adding task', error);
 
         }
@@ -95,8 +100,11 @@ const Home = () => {
         tasksCopy.splice(index, 1)
         try {
             await AsyncStorage.setItem('tasks', JSON.stringify(tasksCopy));
-            setTasks(tasksCopy);
+            // setTasks(tasksCopy);
+            getTasks()
+            Toast.show(`Task deleted sucessfully`, Toast.SHORT)
         } catch (error) {
+            Toast.show(`Error deleting task`, Toast.SHORT)
             console.error('Failed to delete task', error);
         }
     }
@@ -113,17 +121,17 @@ const Home = () => {
         <View style={styles.container} >
             <ScrollView style={styles.mainView} contentContainerStyle={{ alignItems: 'center', paddingBottom: '20%' }} >
                 <Text style={styles.heading}>Home</Text>
-                <MyButton title='Create Task' onPress={createTask} />
+                <MyButton title='Create Task' onPress={createTask} style={{ backgroundColor: 'green' }} />
                 <Text style={[styles.heading1, { marginTop: 20 }]}>All Tasks</Text>
                 {tasks?.length === 0 ?
                     <Text style={[styles.heading1, { marginTop: 20 }]}>No tasks to show</Text>
                     :
 
-                    <View style={styles.taskTable} >
+                    <View style={{width: '90%'}} >
                         {tasks?.map((tk, index) =>
-                            <View key={index?.toString()} >
-                                <MyButton title='Delete' onPress={() => deletetask(index)} />
-                                <MyButton title='Edit' onPress={() => editTask(index)} />
+                            <View key={index?.toString()} style={styles.taskTable} >
+                                <MyButton title='Delete' onPress={() => deletetask(index)} style={{ alignSelf: 'center', marginBottom: 10, width: '100%' }} />
+                                <MyButton title='Edit' onPress={() => editTask(index)} style={{ alignSelf: 'center', width: '100%' }} />
                                 <View style={styles.taskRow}>
                                     <View>
                                         <Text style={styles.taskHeading} >Title</Text>
@@ -199,6 +207,7 @@ const styles = StyleSheet.create({
     },
     taskTable: {
         padding: 10,
+        marginBottom: 10,
         borderColor: 'black',
         borderWidth: 1,
         borderRadius: 10,
