@@ -11,10 +11,15 @@ import {
     Image
 } from 'react-native';
 
-const MyButton = ({ title, onPress }) => {
+interface Props {
+    title: string;
+    onPress: any;
+    style?: any;
+}
+const MyButton = ({ title, onPress, style = {} }: Props) => {
 
     return (
-        <TouchableOpacity onPress={onPress} style={styles.button} >
+        <TouchableOpacity onPress={onPress} style={[styles.button, style]} >
             <Text style={styles.someText}>{title}</Text>
         </TouchableOpacity>
     )
