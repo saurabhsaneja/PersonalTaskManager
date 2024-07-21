@@ -10,13 +10,13 @@ import { getFont } from '../helpers/helper';
 interface Task {
     title: string;
     description: string;
-    dueDate: Date;
+    dueDate: string;
     status: string;
 }
 interface Props {
     visible: boolean;
     setVisibility: React.Dispatch<React.SetStateAction<boolean>>;
-    createOrUpdateTask: (task: Task) => void;
+    createOrUpdateTask: (task: Task) => Promise<void>;
     actionType: string;
     selectedTaskIndex: number;
     tasks: Task[]

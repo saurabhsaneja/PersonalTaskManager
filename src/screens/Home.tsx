@@ -32,6 +32,8 @@ const Home = () => {
     const { taskList, addAllToTaskList, addToTaskList, updateTaskList, deleteFromTaskList } = tasksStore()
     // title, description, due date, and status (pending/completed
     const [tasks, setTasks] = useState<Task[]>([...taskList])
+    console.log('taskList home`', taskList);
+    
     const [selectedTaskIndex, setSelectedTaskIndex] = useState(-1)
     const [actionType, setActionType] = useState('')
     const [showCreateUpdateTaskModel, setShowCreateUpdateTaskModel] = useState(false)
@@ -67,7 +69,7 @@ const Home = () => {
         newDate.setMinutes(newDate.getMinutes() - 1);
 
 
-        const trigger = {
+        const trigger: TimestampTrigger = {
             type: TriggerType.TIMESTAMP,
             timestamp: newDate.getTime(), // Unix timestamp in milliseconds
         };
@@ -123,23 +125,28 @@ const Home = () => {
         if (!createOrUpdateaskValidation(task)) {
             return
         }
-        try {
-            let allTasks: Task[] = await AsyncStorage.getItem('tasks');
-            allTasks = JSON.parse(allTasks)
-            console.log('allTasks', allTasks);
 
-            if (actionType === 'create') {
-                addToTaskList(task)
-                if (!allTasks) {
-                    AsyncStorage.setItem('tasks', JSON.stringify([task]));
-                } else {
+        // Initialize allTasks as an empty array if storedTasks is null
+        let allTasks: Task[] = [];
+        try {
+            let storedTasks = await AsyncStorage.getItem('tasks');
+            if (storedTasks) {
+                allTasks = JSON.parse(storedTasks) as Task[];
+
+                if (actionType === 'create') {
+                    addToTaskList(task)
+
                     AsyncStorage.setItem('tasks', JSON.stringify([...allTasks, task]));
+                } else {
+                    updateTaskList(task, selectedTaskIndex)
+                    let allTasksCopy = [...allTasks]
+                    allTasksCopy = allTasksCopy?.map((tk, index) => index === selectedTaskIndex ? task : tk)
+                    AsyncStorage.setItem('tasks', JSON.stringify(allTasksCopy));
                 }
             } else {
-                updateTaskList(task, selectedTaskIndex)
-                let allTasksCopy = [...allTasks]
-                allTasksCopy = allTasksCopy?.map((tk, index) => index === selectedTaskIndex ? task : tk)
-                AsyncStorage.setItem('tasks', JSON.stringify(allTasksCopy));
+                if (actionType === 'create') {
+                    AsyncStorage.setItem('tasks', JSON.stringify([task]));
+                }
             }
             setShowCreateUpdateTaskModel(false)
             Toast.show(`Task ${actionType === 'create' ? 'created' : 'updated'} sucessfully`, Toast.SHORT)
@@ -194,7 +201,7 @@ const Home = () => {
                             {getTodaysTasks(tasks, filterStatus)?.length > 0 ?
                                 <>
                                     <Text style={[styles.heading1, { marginTop: 20 }]}>Tasks due today</Text>
-                                    {getTodaysTasks(tasks, filterStatus)?.map((tk, index) =>
+                                    {getTodaysTasks(tasks, filterStatus)?.map((tk: Task, index: number) =>
                                         <View key={index?.toString()} style={styles.taskTable} >
                                             <MyButton title='Delete' onPress={() => deletetask(index)} style={{ alignSelf: 'center', marginBottom: 10, width: '100%' }} />
                                             <MyButton title='Edit' onPress={() => editTask(index)} style={{ alignSelf: 'center', width: '100%' }} />
@@ -226,7 +233,7 @@ const Home = () => {
                             {getUpcomingTasks(tasks, filterStatus)?.length > 0 ?
                                 <>
                                     <Text style={[styles.heading1, { marginTop: 20 }]}>Upcoming Tasks</Text>
-                                    {getUpcomingTasks(tasks, filterStatus)?.map((tk, index) =>
+                                    {getUpcomingTasks(tasks, filterStatus)?.map((tk: Task, index: number) =>
                                         <View key={index?.toString()} style={styles.taskTable} >
                                             <MyButton title='Delete' onPress={() => deletetask(index)} style={{ alignSelf: 'center', marginBottom: 10, width: '100%' }} />
                                             <MyButton title='Edit' onPress={() => editTask(index)} style={{ alignSelf: 'center', width: '100%' }} />
@@ -354,17 +361,17 @@ function isToday(dateString: string) {
 }
 // Function to check if a given time is future
 
-const getTodaysTasks = (tasks, filterStatus) => {
+const getTodaysTasks = (tasks: Task[], filterStatus: string) => {
     if (filterStatus === '') {
         return tasks?.filter(tk => isToday(tk?.dueDate))
     } else {
         return tasks?.filter(tk => isToday(tk?.dueDate))?.filter(tk => tk?.status === filterStatus)
     }
 }
-const getUpcomingTasks = (tasks, filterStatus) => {
+const getUpcomingTasks = (tasks: Task[], filterStatus: string) => {
     if (filterStatus === '') {
         return tasks?.filter(tk => !isToday(tk?.dueDate))
     } else {
-        return tasks?.filter(tk => isToday(tk?.dueDate))?.filter(tk => tk?.status === filterStatus)
+        return tasks?.filter(tk => !isToday(tk?.dueDate))?.filter(tk => tk?.status === filterStatus)
     }
 }
