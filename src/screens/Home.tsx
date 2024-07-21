@@ -59,6 +59,10 @@ const Home = () => {
             todaysTasks?.forEach(task => scheduleNotification(task))
         }
     }, [tasks])
+    useEffect(() => {
+        console.log('taskList updated', taskList);
+        
+    }, [taskList])
 
     async function scheduleNotification(task: Task) {
         console.log('taskDateAndTime', new Date(task?.dueDate));
@@ -91,9 +95,9 @@ const Home = () => {
             let allTasks = await AsyncStorage.getItem('tasks');
             if (allTasks) {
                 setTasks(JSON.parse(allTasks))
-                if (taskList?.length == 0) {
-                    addAllToTaskList(JSON.parse(allTasks))
-                }
+                // if (taskList?.length == 0) {
+                //     addAllToTaskList(JSON.parse(allTasks))
+                // }
                 // console.log('alltasks fetched', JSON.parse(allTasks));
             }
         } catch (error) {
