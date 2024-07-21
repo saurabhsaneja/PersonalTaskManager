@@ -29,7 +29,7 @@ interface Task {
 }
 
 const Home = () => {
-    const {taskList, addAllToTaskList, addToTaskList, updateTaskList, deleteFromTaskList} = tasksStore()
+    const { taskList, addAllToTaskList, addToTaskList, updateTaskList, deleteFromTaskList } = tasksStore()
     // title, description, due date, and status (pending/completed
     const [tasks, setTasks] = useState<Task[]>([])
     const [selectedTaskIndex, setSelectedTaskIndex] = useState(-1)
@@ -51,24 +51,34 @@ const Home = () => {
     // }, [taskList])
     useEffect(() => {
         getTasks()
-        scheduleNotification()
     }, [])
+    useEffect(() => {
+        // send notification 1 minute before due time for todays tasks
+        const todaysTasks = tasks?.filter(tk => isFuture(tk?.dueDate))
+        console.log('todaysTasks', todaysTasks);
+        if (todaysTasks?.length > 0) {
+            todaysTasks?.forEach(task => scheduleNotification(task))
+        }
+    }, [tasks])
 
-    async function scheduleNotification() {
-        // Create a time-based trigger
-        const date = new Date(Date.now());
-        date.setSeconds(date.getSeconds() + 10); // after 5 secs
-        // date.setHours(date.getHours() + 1); // Schedule notification to appear in one hour
+    async function scheduleNotification(task: Task) {
+        console.log('taskDateAndTime', new Date(task?.dueDate));
+        const someDate = new Date(task?.dueDate); // Replace with your date
+        const newDate = new Date(someDate);
+
+        // Subtract one minute
+        newDate.setMinutes(newDate.getMinutes() - 1);
+
 
         const trigger = {
             type: TriggerType.TIMESTAMP,
-            timestamp: date.getTime(), // Unix timestamp in milliseconds
+            timestamp: newDate.getTime(), // Unix timestamp in milliseconds
         };
 
         await notifee.createTriggerNotification(
             {
-                title: 'Scheduled Notification',
-                body: 'This notification was scheduled 5 seconds ago',
+                title: task?.title,
+                body: `Your task due date and time is ${moment(task.dueDate).format('DD MMM, YYYY, HH:mm A')}`,
                 android: {
                     channelId: 'default',
                 },
@@ -82,10 +92,10 @@ const Home = () => {
             let allTasks = await AsyncStorage.getItem('tasks');
             if (allTasks) {
                 setTasks(JSON.parse(allTasks))
-                if(taskList?.length == 0){
+                if (taskList?.length == 0) {
                     addAllToTaskList(JSON.parse(allTasks))
                 }
-                console.log('alltasks fetched', JSON.parse(allTasks));
+                // console.log('alltasks fetched', JSON.parse(allTasks));
             }
         } catch (error) {
             Toast.show(`error fetching tasks`, Toast.SHORT)
@@ -204,7 +214,7 @@ const Home = () => {
                                             <View style={styles.taskRow}>
                                                 <View>
                                                     <Text style={styles.taskHeading} >Due Date</Text>
-                                                    <Text style={[styles.taskHeading, {marginTop: 15}]} >Status</Text>
+                                                    <Text style={[styles.taskHeading, { marginTop: 15 }]} >Status</Text>
                                                 </View>
                                                 <View style={styles.rightColumn} >
                                                     <Text style={styles.taskValue} >{moment(tk.dueDate).format('DD MMM, YYYY, HH:mm A')}</Text>
@@ -236,7 +246,7 @@ const Home = () => {
                                             <View style={styles.taskRow}>
                                                 <View>
                                                     <Text style={styles.taskHeading} >Due Date</Text>
-                                                    <Text style={[styles.taskHeading, {marginTop: 15}]} >Status</Text>
+                                                    <Text style={[styles.taskHeading, { marginTop: 15 }]} >Status</Text>
                                                 </View>
                                                 <View style={styles.rightColumn} >
                                                     <Text style={styles.taskValue} >{moment(tk.dueDate).format('DD MMM, YYYY, HH:mm A')}</Text>
@@ -344,6 +354,18 @@ function isToday(dateString: string) {
 
     // Compare date without time component
     return dateToCheck.isSame(today, 'day');
+}
+// Function to check if a given time is future
+function isFuture(dateString: string) {
+    // Create a moment object for the time you want to check
+    const timeToCheck = moment(dateString);
+
+    // Create a moment object for the current time
+    const now = moment();
+
+    // Check if the time is in the future
+    const isInFuture = timeToCheck.isAfter(now);
+    return isInFuture
 }
 
 const getTodaysTasks = (tasks, filterStatus) => {
