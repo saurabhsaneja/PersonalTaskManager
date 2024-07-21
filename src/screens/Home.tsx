@@ -19,6 +19,7 @@ import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import CreateUpdateTask from '../components/CreateUpdateTask';
 import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
+import tasksStore from '../helpers/tasksStore';
 
 interface Task {
     title: string;
@@ -28,6 +29,7 @@ interface Task {
 }
 
 const Home = () => {
+    const {taskList, addAllToTaskList, addToTaskList, updateTaskList, deleteFromTaskList} = tasksStore()
     // title, description, due date, and status (pending/completed
     const [tasks, setTasks] = useState<Task[]>([])
     const [selectedTaskIndex, setSelectedTaskIndex] = useState(-1)
@@ -44,6 +46,9 @@ const Home = () => {
             value: 'completed',
         },
     ])
+    // useEffect(() => {
+    //     console.log('taskList updated', taskList);
+    // }, [taskList])
     useEffect(() => {
         getTasks()
         scheduleNotification()
@@ -72,13 +77,14 @@ const Home = () => {
         );
     }
 
-    scheduleNotification();
-
     const getTasks = async () => {
         try {
             let allTasks = await AsyncStorage.getItem('tasks');
             if (allTasks) {
                 setTasks(JSON.parse(allTasks))
+                if(taskList?.length == 0){
+                    addAllToTaskList(JSON.parse(allTasks))
+                }
                 console.log('alltasks fetched', JSON.parse(allTasks));
             }
         } catch (error) {
@@ -116,12 +122,14 @@ const Home = () => {
             console.log('allTasks', allTasks);
 
             if (actionType === 'create') {
+                addToTaskList(task)
                 if (!allTasks) {
                     AsyncStorage.setItem('tasks', JSON.stringify([task]));
                 } else {
                     AsyncStorage.setItem('tasks', JSON.stringify([...allTasks, task]));
                 }
             } else {
+                updateTaskList(task, selectedTaskIndex)
                 let allTasksCopy = [...allTasks]
                 allTasksCopy = allTasksCopy?.map((tk, index) => index === selectedTaskIndex ? task : tk)
                 AsyncStorage.setItem('tasks', JSON.stringify(allTasksCopy));
@@ -140,6 +148,7 @@ const Home = () => {
         tasksCopy.splice(index, 1)
         try {
             await AsyncStorage.setItem('tasks', JSON.stringify(tasksCopy));
+            deleteFromTaskList(index)
             // setTasks(tasksCopy);
             getTasks()
             Toast.show(`Task deleted sucessfully`, Toast.SHORT)
@@ -330,8 +339,8 @@ const styles = StyleSheet.create({
 function isToday(dateString: string) {
     const dateToCheck = moment(dateString); // Parse the input date string
     const today = moment(); // Get today's date
-    console.log('dateToCheck', dateToCheck);
-    console.log('today', today);
+    // console.log('dateToCheck', dateToCheck);
+    // console.log('today', today);
 
     // Compare date without time component
     return dateToCheck.isSame(today, 'day');

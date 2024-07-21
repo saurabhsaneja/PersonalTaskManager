@@ -87,8 +87,8 @@ const CreateUpdateTask = ({ visible, setVisibility, createOrUpdateTask, actionTy
                             onPress={() => setOpenDueDate(true)}
                             style={styles.datePicker}>
                             <Text style={[styles.datePickerText, dueDate ? { color: 'black' } : null]} >{dueDate
-                                ? moment(dueDate).format('DD MMM, YYYY')
-                                : 'Select Due Date'}</Text>
+                                ? moment(dueDate).format('DD MMM, YYYY, HH:mm A')
+                                : 'Select Due Date and Time'}</Text>
                         </TouchableOpacity>
                         <DropdownPicker
                             placeholder="Please select status"
@@ -102,7 +102,7 @@ const CreateUpdateTask = ({ visible, setVisibility, createOrUpdateTask, actionTy
             </KeyboardAvoidingView>
             <DatePicker
                 modal
-                mode="date"
+                // mode="datetime"
                 // mode="time"
                 open={openDueDate}
                 date={date}
