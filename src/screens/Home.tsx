@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import MyTextInput from '../components/MyTextInput'
 import MyButton from '../components/MyButton';
 import Toast from 'react-native-simple-toast'
-import { getFont } from '../helpers/helper';
+import { getFont, isFuture } from '../helpers/helper';
 import DropdownPicker from '../components/DropdownPicker';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
@@ -353,17 +353,6 @@ function isToday(dateString: string) {
     return dateToCheck.isSame(today, 'day');
 }
 // Function to check if a given time is future
-function isFuture(dateString: string) {
-    // Create a moment object for the time you want to check
-    const timeToCheck = moment(dateString);
-
-    // Create a moment object for the current time
-    const now = moment();
-
-    // Check if the time is in the future
-    const isInFuture = timeToCheck.isAfter(now);
-    return isInFuture
-}
 
 const getTodaysTasks = (tasks, filterStatus) => {
     if (filterStatus === '') {
