@@ -23,7 +23,7 @@ import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
 interface Task {
     title: string;
     description: string;
-    dueDate: Date;
+    dueDate: string;
     status: string;
 }
 
@@ -185,20 +185,20 @@ const Home = () => {
                                             <View style={styles.taskRow}>
                                                 <View>
                                                     <Text style={styles.taskHeading} >Title</Text>
-                                                    <Text style={styles.taskValue} >{tk.title}</Text>
+                                                    <Text style={styles.taskHeading} >Description</Text>
                                                 </View>
                                                 <View style={styles.rightColumn} >
-                                                    <Text style={styles.taskHeading} >Description</Text>
+                                                    <Text style={styles.taskValue} >{tk.title}</Text>
                                                     <Text style={styles.taskValue} >{tk.description}</Text>
                                                 </View>
                                             </View>
                                             <View style={styles.taskRow}>
                                                 <View>
                                                     <Text style={styles.taskHeading} >Due Date</Text>
-                                                    <Text style={styles.taskValue} >{tk.dueDate}</Text>
+                                                    <Text style={[styles.taskHeading, {marginTop: 15}]} >Status</Text>
                                                 </View>
                                                 <View style={styles.rightColumn} >
-                                                    <Text style={styles.taskHeading} >Status</Text>
+                                                    <Text style={styles.taskValue} >{moment(tk.dueDate).format('DD MMM, YYYY, HH:mm A')}</Text>
                                                     <Text style={styles.taskValue} >{tk.status}</Text>
                                                 </View>
                                             </View>
@@ -217,20 +217,20 @@ const Home = () => {
                                             <View style={styles.taskRow}>
                                                 <View>
                                                     <Text style={styles.taskHeading} >Title</Text>
-                                                    <Text style={styles.taskValue} >{tk.title}</Text>
+                                                    <Text style={styles.taskHeading} >Description</Text>
                                                 </View>
                                                 <View style={styles.rightColumn} >
-                                                    <Text style={styles.taskHeading} >Description</Text>
+                                                    <Text style={styles.taskValue} >{tk.title}</Text>
                                                     <Text style={styles.taskValue} >{tk.description}</Text>
                                                 </View>
                                             </View>
                                             <View style={styles.taskRow}>
                                                 <View>
                                                     <Text style={styles.taskHeading} >Due Date</Text>
-                                                    <Text style={styles.taskValue} >{tk.dueDate}</Text>
+                                                    <Text style={[styles.taskHeading, {marginTop: 15}]} >Status</Text>
                                                 </View>
                                                 <View style={styles.rightColumn} >
-                                                    <Text style={styles.taskHeading} >Status</Text>
+                                                    <Text style={styles.taskValue} >{moment(tk.dueDate).format('DD MMM, YYYY, HH:mm A')}</Text>
                                                     <Text style={styles.taskValue} >{tk.status}</Text>
                                                 </View>
                                             </View>
@@ -328,33 +328,13 @@ const styles = StyleSheet.create({
 
 // Function to check if a given date is today
 function isToday(dateString: string) {
-    const parsedDate = parseCustomDate(dateString)
-    const dateToCheck = moment(parsedDate, 'DD MMM, YYYY'); // Parse the input date string
+    const dateToCheck = moment(dateString); // Parse the input date string
     const today = moment(); // Get today's date
+    console.log('dateToCheck', dateToCheck);
+    console.log('today', today);
 
     // Compare date without time component
     return dateToCheck.isSame(today, 'day');
-}
-
-function parseCustomDate(dateString: string): Date {
-    const parts = dateString.split(' ');
-    const day = parseInt(parts[0], 10);
-    const monthName = parts[1]?.substring(0, parts[1]?.length - 1);
-    const year = parseInt(parts[2], 10);
-
-    // Create a mapping for month names to numbers
-    const months: { [key: string]: number } = {
-        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3,
-        'May': 4, 'Jun': 5, 'Jul': 6, 'Aug': 7,
-        'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-    };
-
-    // Get the month number from the month name
-    const month = months[monthName];
-
-    console.log('year, month, day', year, month, day);
-    // Create a Date object with year, month, and day
-    return new Date(year, month, day);
 }
 
 const getTodaysTasks = (tasks, filterStatus) => {

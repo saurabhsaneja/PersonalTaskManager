@@ -9,7 +9,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MainStack from './src/navigation/MainStack';
 import { NavigationContainer } from '@react-navigation/native';
-import notifee, { AndroidImportance } from '@notifee/react-native';
+import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 
 function App(): React.JSX.Element {
   useEffect(() => {
@@ -24,6 +24,15 @@ function App(): React.JSX.Element {
           name: 'Default Channel',
           importance: AndroidImportance.HIGH,
         });
+        notifee.onBackgroundEvent(async ({ type, detail }) => {
+          switch (type) {
+            case EventType.PRESS:
+              console.log('User pressed notification', detail.notification);
+              // Handle the press event, navigate to a specific screen, etc.
+              break;
+            // Handle other event types if necessary
+          }
+        });    
   }
   return (
     <NavigationContainer>

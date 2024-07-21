@@ -54,7 +54,8 @@ const CreateUpdateTask = ({ visible, setVisibility, createOrUpdateTask, actionTy
                     const task = tasks[selectedTaskIndex]
                     setTitle(task?.title)
                     setDescription(task?.description)
-                    setDueDate(parseCustomDate(task?.dueDate))
+                    // setDueDate(parseCustomDate(task?.dueDate))
+                    setDueDate(task?.dueDate)
                     setStatus(task?.status)
                 } else {
                     setTitle('')
@@ -95,7 +96,7 @@ const CreateUpdateTask = ({ visible, setVisibility, createOrUpdateTask, actionTy
                             setValue={setStatus}
                             data={statusData}
                         />
-                        <MyButton title={actionType === 'create' ? 'Create Task' : 'Edit Task'} onPress={() => createOrUpdateTask({ title, description, dueDate: moment(dueDate).format('DD MMM, YYYY'), status })} style={{ width: '100%', alignSelf: 'center' }} />
+                        <MyButton title={actionType === 'create' ? 'Create Task' : 'Edit Task'} onPress={() => createOrUpdateTask({ title, description, dueDate, status })} style={{ width: '100%', alignSelf: 'center' }} />
                     </View>
                 </View>
             </KeyboardAvoidingView>
@@ -107,6 +108,7 @@ const CreateUpdateTask = ({ visible, setVisibility, createOrUpdateTask, actionTy
                 date={date}
                 minimumDate={new Date()}
                 onConfirm={time => {
+                    console.log({time});
                     setOpenDueDate(false);
                     setDueDate(time);
                 }}
