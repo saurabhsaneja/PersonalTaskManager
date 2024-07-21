@@ -18,6 +18,8 @@ import DropdownPicker from '../components/DropdownPicker';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import CreateUpdateTask from '../components/CreateUpdateTask';
+import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
+
 interface Task {
     title: string;
     description: string;
@@ -44,7 +46,34 @@ const Home = () => {
     ])
     useEffect(() => {
         getTasks()
+        scheduleNotification()
     }, [])
+
+    async function scheduleNotification() {
+        // Create a time-based trigger
+        const date = new Date(Date.now());
+        date.setSeconds(date.getSeconds() + 10); // after 5 secs
+        // date.setHours(date.getHours() + 1); // Schedule notification to appear in one hour
+
+        const trigger = {
+            type: TriggerType.TIMESTAMP,
+            timestamp: date.getTime(), // Unix timestamp in milliseconds
+        };
+
+        await notifee.createTriggerNotification(
+            {
+                title: 'Scheduled Notification',
+                body: 'This notification was scheduled 5 seconds ago',
+                android: {
+                    channelId: 'default',
+                },
+            },
+            trigger,
+        );
+    }
+
+    scheduleNotification();
+
     const getTasks = async () => {
         try {
             let allTasks = await AsyncStorage.getItem('tasks');

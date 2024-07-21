@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "178728315128",
+    "project_id": "testpersonal-9ca66",
+    "storage_bucket": "testpersonal-9ca66.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178728315128:android:756024be07d7952401f30d",
+        "android_client_info": {
+          "package_name": "com.personaltaskmanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuLb7G6f-74A_PXebWz-zo3FeYuBW56B0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
