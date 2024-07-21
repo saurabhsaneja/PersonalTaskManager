@@ -1,3 +1,5 @@
+IMPORTANT: Notification will be sent 1 minute prior to Task due date and time
+
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started

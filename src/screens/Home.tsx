@@ -31,7 +31,7 @@ interface Task {
 const Home = () => {
     const { taskList, addAllToTaskList, addToTaskList, updateTaskList, deleteFromTaskList } = tasksStore()
     // title, description, due date, and status (pending/completed
-    const [tasks, setTasks] = useState<Task[]>([])
+    const [tasks, setTasks] = useState<Task[]>([...taskList])
     const [selectedTaskIndex, setSelectedTaskIndex] = useState(-1)
     const [actionType, setActionType] = useState('')
     const [showCreateUpdateTaskModel, setShowCreateUpdateTaskModel] = useState(false)
@@ -49,9 +49,6 @@ const Home = () => {
     // useEffect(() => {
     //     console.log('taskList updated', taskList);
     // }, [taskList])
-    useEffect(() => {
-        getTasks()
-    }, [])
     useEffect(() => {
         // send notification 1 minute before due time for todays tasks
         const todaysTasks = tasks?.filter(tk => isFuture(tk?.dueDate))

@@ -8,11 +8,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
 import { getFont } from '../helpers/helper';
 import { NavigationProp } from '@react-navigation/native';
+import tasksStore from '../helpers/tasksStore';
 
 type Props = {
     navigation: NavigationProp<any>;
 };
 const Splash = ({ navigation }: Props) => {
+    const { addAllToTaskList } = tasksStore()
     //function : navigation function
     const resetIndexGoToLogin = CommonActions.reset({
         index: 1,
@@ -27,6 +29,10 @@ const Splash = ({ navigation }: Props) => {
         setTimeout(async () => {
             try {
                 const email = await AsyncStorage.getItem('email');
+                const allTasks = await AsyncStorage.getItem('tasks');
+                if (allTasks) {
+                    addAllToTaskList(JSON.parse(allTasks))
+                }
                 if (email) {
                     navigation.dispatch(resetIndexGoToLogin)
                 } else {
